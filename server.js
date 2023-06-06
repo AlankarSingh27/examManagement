@@ -1,21 +1,28 @@
-
 const express = require('express');
 const mysql = require('mysql2');
+require('dotenv').config();
+ const userRouter=require('./router/userRouter');
+
 const app = express();
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'Alankar12@',
-  database : 'users'
+app.use(express.json());
+
+
+let connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+
 });
 
 connection.connect();
-const sqlCreate="INSERT INTO student (name,email,password,roll) VALUES ('add','dadsdf@f.com','asdsd12','5445654')"
-connection.query(sqlCreate, function (error, results, fields) {
-  if (error) throw error;
-  console.log('The solution is: ', results);
+ app.use('/users',userRouter);
+// const sqlCreate="INSERT INTO student (name,email,password,roll) VALUES ('add','dadsdf@f.com','asdsd12','5445654')"
+// connection.query(sqlCreate, function (error, results, fields) {
+//   if (error) throw error;
+//   console.log('The solution is: ', results);
 
-});
+// });
 // const sqlInsert="INSERT INTO student (name,email,password) VALUES ('add','dadsdf@f.com','asdsd12')"
 // connection.query(sqlInsert, function (error, results, fields) {
 //   if (error) throw error;
@@ -37,7 +44,7 @@ connection.query(sqlCreate, function (error, results, fields) {
 
 connection.end();
 app.listen(8081, () => {
-  console.log("Listening on port 8081");
+  console.log(`Listening on port 8081`);
 });
 
 ;

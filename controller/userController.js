@@ -1,15 +1,5 @@
-// controllers/userController.js
-
-const mysql = require('mysql2');
-
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Alankar12@',
-    database: 'examManagement'
-});
-
-connection.connect();
+const connection = require('../model/database');
+const bcrypt = require('bcrypt');
 
 const UserController = {};
 
@@ -45,9 +35,14 @@ UserController.getUserById = async (req, res) => {
 UserController.createUser = async (req, res) => {
     try {
         const { name, email, role_id, mobile, photo, password } = req.body;
+
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         const sql =
             'INSERT INTO users (name, email, role_id, mobile, photo, password) VALUES (?, ?, ?, ?, ?, ?)';
-        await connection.promise().query(sql, [name, email, role_id, mobile, photo, password]);
+        await connection.promise().query(sql, [name, email, role_id, mobile, photo, hashedPassword]);
 
         res.json({ message: 'User created successfully' });
     } catch (error) {
@@ -60,9 +55,14 @@ UserController.updateUser = async (req, res) => {
     try {
         const id = req.params.id;
         const { name, email, role_id, mobile, photo, password } = req.body;
+
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         const sql =
             'UPDATE users SET name = ?, email = ?, role_id = ?, mobile = ?, photo = ?, password = ? WHERE id = ?';
-        await connection.promise().query(sql, [name, email, role_id, mobile, photo, password, id]);
+        await connection.promise().query(sql, [name, email, role_id, mobile, photo, hashedPassword, id]);
 
         res.json({ message: 'User updated successfully' });
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, {  useState } from "react";
-import axios from 'axios';
-import { Link, useNavigate } from "react-router-dom"
+import { UserService } from "../loginService/LoginService";
+import { useNavigate } from "react-router-dom"
+import Cookies from 'js-cookie'; 
 
 let LoginPage = () => {
   const navigate = useNavigate()
@@ -13,24 +14,35 @@ let LoginPage = () => {
   let login = (e) => {
     e.preventDefault();
     console.log(user);
-        const data = { email: user.email, password:user.password }
-        axios.post('http://localhost:8081/user/login', data)
-            .then((res) => {
-               
-                if(res.data.role_id===1){
-                  navigate('/admin');
-                }
-                else{
-                  navigate('/user')
-                }
-                   }
-            )
-            .catch((err) => {
+    let userService = new UserService();
+    userService.loginUser(user)
+        // const data = { email: user.email, password:user.password }
+        // axios.post('http://localhost:8081/user/login', data)
+            
+        .then(res => {
+        
+          if (res.data.user) {
+              localStorage.setItem('user', JSON.stringify(res.data.user));
+          }
+  
+          if (res.data.token) {
+            // Save token in cookies
+            Cookies.set('token', res.data.token,{expireIn:res.data.expireIn});
+          }
+          console.log(res.data.user.role_id);
+          if(res.data.user.role_id===1){
+            navigate('/admin', { state: { user: res.data.user } } )
+          }
+          else{
+            navigate('/user',{ state: { user: res.data.user } })
+          }
+       })
+      .catch((err) => {
                 console.log(err)
             })
   }
   return (
-    <React.Fragment>
+    
       <div className="container mt-3">
         <div className="row">
           <div className="col-md-4">
@@ -77,8 +89,8 @@ let LoginPage = () => {
           </div>
         </div>
       </div>
-    </React.Fragment>
+      
   );
-};
+}
 
 export default LoginPage;

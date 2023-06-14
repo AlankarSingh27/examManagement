@@ -1,22 +1,12 @@
-// // import axios from 'axios';
-// //
-// //
-// // export class UserService {
-// //     const serverUrl= "localhost:8081";
-// //
-// //     const loginUser = (user) => {
-// //         let dataUrl = `${this.serverUrl}/admin/login`;
-// //         return axios.post(dataUrl, user);
-// //     };
-// //
-// // }
-// import axios from 'axios';
 
-// export class UserService {
-//     serverUrl = "http://localhost:8081";
+import axios from 'axios';
 
-//    loginUser(user){
-//         let dataUrl = `${this.serverUrl}/admin/login`;
-//         return axios.post(dataUrl, user);
-//     }
-// }
+export class UserService {
+    serverUrl = "http://localhost:8081";
+
+   loginUser(user){
+        let dataUrl = `${this.serverUrl}/user/login`;
+        const data = { email: user.email, password:user.password }
+        return axios.post(dataUrl, data);
+    }
+}
